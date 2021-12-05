@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import Button from "./components/UI/Button/Button";
 import DemoOutput from "./components/Demo/DemoOutput";
@@ -6,27 +6,25 @@ import DemoOutput from "./components/Demo/DemoOutput";
 import "./App.css";
 
 function App() {
-  const [showParagraph, setShowParagraph] = useState(false);
-  const [allowToggle, setAllowToggle] = useState(false);
+  const [listTitle, setListTitle] = useState("My List");
 
   console.log("APP RUNNING");
 
-  const toggleParagraphHandler = useCallback(() => {
-    if (allowToggle) {
-      setShowParagraph((prevShowParagraph) => !prevShowParagraph);
-    }
-  }, [allowToggle]);
+  const changeTitleHandler = useCallback(() => {
+    console.log("setListTitle");
+    // A little weird thing: if my render function returns the same thing 2 times in a row, the real DOM doesn't get changed at all
+    // 第二次還是會因為 setState 重新渲染元件，但如果連續兩次都設定一樣的 state 後，下次再一樣時DOM 不會改變
+    setListTitle("New Title");
+  }, []);
 
-  const allowToggleHandler = () => {
-    setAllowToggle(true);
-  };
+  const items = useMemo(() => {
+    return [5, 3, 1, 10, 9];
+  }, []); // empty dependency => never change
 
   return (
     <div className="app">
-      <h1>Hi there!</h1>
-      <DemoOutput show={showParagraph} />
-      <Button onClick={allowToggleHandler}>Allow Toggle!</Button>
-      <Button onClick={toggleParagraphHandler}>Toggle Paragraph!</Button>
+      <DemoOutput title={listTitle} items={items} />
+      <Button onClick={changeTitleHandler}>Change List Title</Button>
     </div>
   );
 }
